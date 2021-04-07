@@ -7,10 +7,12 @@ import argparse
 import os
 import sys
 
-parser.add_argument('-d', '--dmp', nargs='+', ...)
+parser = argparse.ArgumentParser(description='List the content of a folder')
+
+parser.add_argument('vars', nargs='+')
 opts = parser.parse_args()	
 
-print('opts')
+print(opts)
 
 # def add_table():
 # 	my_parser.add_argument('a', help='a first argument')
@@ -30,7 +32,6 @@ print('opts')
 #       'all the parameters')
 
 # # Create the parser
-# my_parser = argparse.ArgumentParser(description='List the content of a folder')
 
 # # Add the arguments
 # my_parser.add_argument('Operation',
