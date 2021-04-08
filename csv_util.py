@@ -53,8 +53,3 @@ def _drop_table(table_name):
 		    print("The table: {} does not exist!".format(table_name))
 	else:
 		print("The table: {} does not exist!".format(table_name))
-		
-
-_init_storage()
-_create_table("table3", 0, 3, ['int', 'char', 'char'], ['id', 'name', 'company'])
-_drop_table("table3")
