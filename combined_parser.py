@@ -7,7 +7,7 @@ import sys
 
 import sqlparse
 
-from csv_util import *
+import csv_util
 
 def sql_parser(query):
 	parsed = sqlparse.parse(query)[0]
