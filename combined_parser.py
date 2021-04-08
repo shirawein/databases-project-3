@@ -54,5 +54,5 @@ if(first_word == "create" and second_word == "table"):
 	_create_table(table_name, 0, len(colname_list), datatype_list, colname_list)
 
 
-#print(sql_parser(all_input))
-
+if(first_word == "drop" and second_word == "table):
+   	_drop_table(opts.vars[3])
