@@ -9,6 +9,7 @@ import sys
 
 import sqlparse
 
+from csv_util import *
 
 def sql_parser(query):
 	parsed = sqlparse.parse(query)[0]
@@ -24,5 +25,12 @@ opts = parser.parse_args()
 all_input = ' '.join(opts.vars)
 
 # print(all_input)
+
+#parse first word
+
+if(first_word == "create"):
+	_create_table(third_word, 0, length(p), datatype_list, colname_list)
+
+
 
 print(sql_parser(all_input))
