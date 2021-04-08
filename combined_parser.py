@@ -7,7 +7,7 @@ import sys
 
 import sqlparse
 
-import csv_util
+import csv_util as cutil
 
 def sql_parser(query):
 	parsed = sqlparse.parse(query)[0]
@@ -43,7 +43,7 @@ if(first_word == "create" and second_word == "table"):
 			print("i: ", i)
 			if opts.vars[i] is not ')' :
 				colname_list.append(opts.vars[i])
-				datatype_list.append(opts.vars[i+1])
+				datatype_list.append(opts.vars[i+1][:-1])
 				
 			
 	# print(table_name)
@@ -51,8 +51,10 @@ if(first_word == "create" and second_word == "table"):
 	# print(len(colname_list))
 	# print(datatype_list)
 	# print(colname_list)
-	_create_table(table_name, 0, len(colname_list), datatype_list, colname_list)
+	cutil._create_table(table_name, 0, len(colname_list), datatype_list, colname_list)
 
 
-if(first_word == "drop" and second_word == "table):
-   	_drop_table(opts.vars[3])
+if(first_word == "drop" and second_word == "table"):
+	table_name = opts.vars[2]
+	print(table_name)
+	cutil._drop_table(table_name)
