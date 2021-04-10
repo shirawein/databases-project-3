@@ -289,10 +289,10 @@ def _select(table_name, view_colname_list, colname_list, condition_list, value_l
 #_drop_table('table_name_test')
 #_create_table('table_name_test', 0, 2, ['int', 'varchar 20'], ['idd', 'namee'], ['idd', 'namee'])
 #_insert('table_name_test', ['idd', 'namee'], [10, 'asdf'])
-#_delete('table_name_test', ['idd', 'namee'], ['=', '='], [11, 'asdf'], [13, 'jkl'])
+#_delete('table_name_test', ['idd', 'namee'], ['=', '='], [11, 'asdf'])
 #_update('table_name_test', ['namee', 'idd'], ['=', '='], ['jkl', 13], ['zxcv', 22])
 #_select('table_name_test', ['namee'], ['namee', 'idd'], ['=', '='], ['zxcv', 22])
-_select('table_name_test', ['idd'], ['namee'], ['='], ['asdf'])
+#_select('table_name_test', ['idd'], ['namee'], ['='], ['asdf'])
 
 
 
