@@ -35,6 +35,48 @@ def condition_function(obj1, sign, obj2):
 			return True
 	return False
 
+def mmcas_function(lines, mmcas_list):
+	col = 0
+	answer = []
+	for operation in mmcas_list:
+		if operation == 'max':
+			val = lines[0][col]
+			for line in lines:
+				if line[col] > val:
+					val = line[col]
+			answer.append(val)
+			
+		elif operation == 'min':
+			val = lines[0][col]
+			for line in lines:
+				if line[col] < val:
+					val = line[col]
+			answer.append(val)
+			
+		elif operation == 'count':
+			val = 0
+			for line in lines:
+				val += 1
+			answer.append(val)
+			
+		elif operation == 'sum':
+			val = 0
+			for line in lines:
+				val += int(line[col])
+			answer.append(val)
+			
+		elif operation == 'avg':
+			val = 0
+			count = 0
+			for line in lines:
+				count += 1
+				val += int(line[col])
+			val = val/count
+			answer.append(val)
+		col += 1
+	print(answer)
+	return(answer)
+
 def _init_storage():
 	with open("table_data.csv", 'a', newline='') as file:
 		writer = csv.writer(file, delimiter = ",")
@@ -234,7 +276,7 @@ def _update(table_name, colname_list, condition_list, value_list, new_value_list
 		writer = csv.writer(writeFile)
 		writer.writerows(lines)
 
-def _select(table_name, view_colname_list, colname_list, condition_list, value_list):
+def _select(table_name, view_colname_list, mmcas_list, colname_list, condition_list, value_list, andor):
 	
 	file_name= table_name + ".csv"
 
@@ -270,8 +312,12 @@ def _select(table_name, view_colname_list, colname_list, condition_list, value_l
 			if(not first_row):
 				for i in range(0, len(colname_list)):
 					loc = get_loc(colname_list[i], sorted_colname_list)
-					if not condition_function(row[loc], condition_list[i], str(value_list[i])):
-						true_flag = 1
+					if andor == 'and':
+						if not condition_function(row[loc], condition_list[i], str(value_list[i])):
+							true_flag = 1
+					else:
+						if not condition_function(row[loc], condition_list[i], str(value_list[i])):
+							true_flag = 1	
 			else:
 				first_row = False
 				true_flag = 1
@@ -282,19 +328,24 @@ def _select(table_name, view_colname_list, colname_list, condition_list, value_l
 				lines.append(new_row)
 
 	print(lines)
+	if mmcas_list:
+		return mmcas_function(lines, mmcas_list)
+
 	return lines
 
 
 #_init_storage()
 #_drop_table('table_name_test')
 #_create_table('table_name_test', 0, 2, ['int', 'varchar 20'], ['idd', 'namee'], ['idd', 'namee'])
-#_insert('table_name_test', ['idd', 'namee'], [10, 'asdf'])
+#_insert('table_name_test', ['idd', 'namee'], [18, 'kujt'])
 #_delete('table_name_test', ['idd', 'namee'], ['=', '='], [11, 'asdf'])
 #_update('table_name_test', ['namee', 'idd'], ['=', '='], ['jkl', 13], ['zxcv', 22])
 #_select('table_name_test', ['namee'], ['namee', 'idd'], ['=', '='], ['zxcv', 22])
 #_select('table_name_test', ['idd'], ['namee'], ['='], ['asdf'])
 
+#_select('table_name_test', ['idd', 'namee'], ['avg', 'max'], ['idd'], ['<'], [22])
 
+_select('table_name_test', ['idd', 'namee'], [], ['idd', 'namee'], ['<', '='], [22, 'kujt'], 'and')
 
 
 
