@@ -309,19 +309,27 @@ def _select(table_name, view_colname_list, mmcas_list, colname_list, condition_l
 		first_row = True
 		for row in reader:
 			true_flag = 0
+			false_flag = 0
 			if(not first_row):
 				for i in range(0, len(colname_list)):
 					loc = get_loc(colname_list[i], sorted_colname_list)
-					if andor == 'and':
-						if not condition_function(row[loc], condition_list[i], str(value_list[i])):
-							true_flag = 1
+					if andor == 'or':
+						if condition_function(row[loc], condition_list[i], str(value_list[i])):
+							false_flag = 1
 					else:
 						if not condition_function(row[loc], condition_list[i], str(value_list[i])):
 							true_flag = 1	
 			else:
 				first_row = False
 				true_flag = 1
-			if true_flag == 0:
+				false_flag = 1
+				continue
+			if (false_flag == 1 and andor == 'or'): # handles or
+				new_row = []
+				for i in range(0, len(view_colname_list)):
+					new_row.append(row[view_colname_locs[i]])
+				lines.append(new_row)
+			elif true_flag == 0 and andor != 'or': # handles single, and
 				new_row = []
 				for i in range(0, len(view_colname_list)):
 					new_row.append(row[view_colname_locs[i]])
@@ -343,9 +351,11 @@ def _select(table_name, view_colname_list, mmcas_list, colname_list, condition_l
 #_select('table_name_test', ['namee'], ['namee', 'idd'], ['=', '='], ['zxcv', 22])
 #_select('table_name_test', ['idd'], ['namee'], ['='], ['asdf'])
 
-#_select('table_name_test', ['idd', 'namee'], ['avg', 'max'], ['idd'], ['<'], [22])
+#_select('table_name_test', ['idd', 'namee'], ['avg', 'max'], ['idd'], ['<'], [22], '')
 
-_select('table_name_test', ['idd', 'namee'], [], ['idd', 'namee'], ['<', '='], [22, 'kujt'], 'and')
+_select('table_name_test', ['idd', 'namee'], ['avg', 'max'], ['idd', 'namee'], ['<', '='], [19, 'kujt'], 'or')
+
+#_select('table_name_test', ['idd', 'namee'], ['sum', 'max'], [], [], [], '')
 
 
 
