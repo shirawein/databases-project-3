@@ -353,7 +353,7 @@ def _select(table_name, view_colname_list, mmcas_list, colname_list, condition_l
 
 #_select('table_name_test', ['idd', 'namee'], ['avg', 'max'], ['idd'], ['<'], [22], '')
 
-_select('table_name_test', ['idd', 'namee'], ['avg', 'max'], ['idd', 'namee'], ['<', '='], [19, 'kujt'], 'or')
+#_select('table_name_test', ['idd', 'namee'], ['avg', 'max'], ['idd', 'namee'], ['<', '='], [19, 'kujt'], 'or')
 
 #_select('table_name_test', ['idd', 'namee'], ['sum', 'max'], [], [], [], '')
 
