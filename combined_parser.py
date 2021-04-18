@@ -64,17 +64,26 @@ if(first_word == "drop" and second_word == "table"):
 	cutil._drop_table(table_name)
 
 if(first_word == "select"):
+	print(opts.vars)
 	colname_list = []
 	view_colname_list = []
 	condition_list = []
 	value_list = []
 	mmcas_list = []
 	andor = ""
+	mmcas_operations = ["max","min","count","sum","avg"]
 	f_index = lowered.index('from') 
 	table_name = opts.vars[f_index+1]
-	for arg in opts.vars[1:f_index-1]:
-		view_colname_list.append(arg[:-1])
-	colname_list.append(opts.vars[f_index-1])
+	before_from = opts.vars[1:f_index]
+	for element in range(0,len(before_from)):
+		if before_from[element].lower() in mmcas_operations:
+			mmcas_list.append(before_from[element].lower())
+			element += 1
+			view_colname_list.append(before_from[element])
+			element += 1
+		else:
+			view_colname_list.append(before_from[element])
+	# view_colname_list.append(opts.vars[f_index-1])
 	if (len(opts.vars) > (f_index+1) and opts.vars[f_index+1] == 'where'):
 		for i in range(f_index+2,len(opts.vars),3):
 			if opts.vars[i] is not ')' :
@@ -93,7 +102,16 @@ if(first_word == "select"):
 	# print(view_colname_list)
 	# print(value_list)
 	# print(condition_list)
-	cutil._select(table_name, view_colname_list, mmcas_list, colname_list, condition_list, value_list, andor)
+
+	updated_view_colname_list = []
+
+	for item in view_colname_list:
+		if item[-1] == ',':
+			updated_view_colname_list.append(item[:-1])
+		else:
+			updated_view_colname_list.append(item)
+
+	cutil._select(table_name, updated_view_colname_list, mmcas_list, colname_list, condition_list, value_list, andor)
 
 if(first_word == "insert" and second_word == "into"):
 	colname_list = []
