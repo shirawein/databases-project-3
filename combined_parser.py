@@ -82,6 +82,7 @@ if(first_word == "select"):
 			view_colname_list.append(before_from[element])
 			element += 1
 		else:
+			mmcas_list.append("")
 			view_colname_list.append(before_from[element])
 	# view_colname_list.append(opts.vars[f_index-1])
 	if (len(opts.vars) > (f_index+1) and opts.vars[f_index+1] == 'where'):
