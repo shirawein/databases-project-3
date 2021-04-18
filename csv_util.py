@@ -227,7 +227,7 @@ def _delete(table_name, colname_list, condition_list, value_list):
 		writer = csv.writer(writeFile)
 		writer.writerows(lines)
 
-def _update(table_name, colname_list, condition_list, value_list, new_value_list):
+def _update(table_name, update_colname_list, update_value_list, colname_list, condition_list, value_list, andor):
 	
 	file_name= table_name + ".csv"
 
@@ -256,20 +256,24 @@ def _update(table_name, colname_list, condition_list, value_list, new_value_list
 		first_row = True
 		for row in reader:
 			true_flag = 0
+			false_flag = 0
 			if(not first_row):
 				for i in range(0, len(colname_list)):
 					loc = get_loc(colname_list[i], sorted_colname_list)
 					if not condition_function(row[loc], condition_list[i], str(value_list[i])):
 						true_flag = 1
+					if condition_function(row[loc], condition_list[i], str(value_list[i])):
+						false_flag = 1	
 			else:
+				lines.append(row)
 				first_row = False
-				true_flag = 1
-			if true_flag == 1:
+				continue
+			if (true_flag == 1 and andor != 'or') or (false_flag == 0 and andor == 'or'):
 				lines.append(row)
 			else:
-				for i in range(0, len(colname_list)):
-					loc = get_loc(colname_list[i], sorted_colname_list)
-					row[loc] = new_value_list[i]
+				for i in range(0, len(update_colname_list)):
+					loc = get_loc(update_colname_list[i], sorted_colname_list)
+					row[loc] = update_value_list[i]
 				lines.append(row)
 
 	with open(file_name, 'w') as writeFile:
@@ -355,8 +359,9 @@ def _select(table_name, view_colname_list, mmcas_list, colname_list, condition_l
 
 #_select('table_name_test', ['idd', 'namee'], ['avg', 'max'], ['idd', 'namee'], ['<', '='], [19, 'kujt'], 'or')
 
-#_select('table_name_test', ['idd', 'namee'], ['sum', 'max'], [], [], [], '')
+#_select('table_name_test', ['idd', 'namee'], [], [], [], [], '')
 
+#_update('table_name_test', ['idd'], ['24'], ['namee', 'idd'], ['=', '>='], ['zxcvb', 22], 'or')
 
 
 
