@@ -30,31 +30,109 @@ print(first_word)
 second_word = str(opts.vars[1]).lower()
 print(second_word)
 
+lowered = [element.lower() for element in opts.vars]
+
+
 if(first_word == "create" and second_word == "table"):
 	datatype_list = []
 	colname_list = []
+	primary_key_list = []
 
 	table_name = opts.vars[2]
 	print(table_name)
 
-	if opts.vars[3] == '(':
-		print("len ", len(opts.vars[4:]))
+	if len(opts.vars) > 3 and opts.vars[3] == '(':
+		# print("len ", len(opts.vars[4:]))
 		for i in range(4,len(opts.vars),2):
-			print("i: ", i)
+			# print("i: ", i)
 			if opts.vars[i] is not ')' :
 				colname_list.append(opts.vars[i])
-				datatype_list.append(opts.vars[i+1][:-1])
+				if(opts.vars[i+1][-1] == ','):
+					datatype_list.append(opts.vars[i+1][:-1])
+				else:
+					if(opts.vars[i+2] == "primary"):
+						datatype_list.append(opts.vars[i+1][:-1])
+						primary_key_list.append(opts.vars[i+1][:-1])
+						i += 2
 				
-			
-	# print(table_name)
-	# print(0)
-	# print(len(colname_list))
-	# print(datatype_list)
-	# print(colname_list)
-	cutil._create_table(table_name, 0, len(colname_list), datatype_list, colname_list)
+	cutil._create_table(table_name, 0, len(colname_list), datatype_list, colname_list, primary_key_list)
 
 
 if(first_word == "drop" and second_word == "table"):
 	table_name = opts.vars[2]
 	print(table_name)
 	cutil._drop_table(table_name)
+
+if(first_word == "select"):
+	colname_list = []
+	view_colname_list = []
+	condition_list = []
+	value_list = []
+	andor = ""
+	f_index = lowered.index('from') 
+	table_name = opts.vars[f_index+1]
+	for arg in opts.vars[1:f_index-1]:
+		view_colname_list.append(arg[:-1])
+	colname_list.append(opts.vars[f_index-1])
+	if (len(opts.vars) > (f_index+1) and opts.vars[f_index+1] == 'where'):
+		for i in range(f_index+2,len(opts.vars),3):
+			if opts.vars[i] is not ')' :
+				if opts.vars[i] == "and":
+					andor = "and"
+				elif opts.vars[i] == "or":
+					andor = "or"
+				colname_list.append(opts.vars[i])
+				condition_list.append(opts.vars[i+1])
+				value_list.append(opts.vars[i+2])
+
+	# print(colname_list)
+	# print(table_name)
+	# print(view_colname_list)
+	# print(value_list)
+	# print(condition_list)
+	cutil._select(table_name, view_colname_list, colname_list, condition_list, value_list, andor)
+
+if(first_word == "insert" and second_word == "into"):
+	colname_list = []
+	value_list = []
+	table_name = opts.vars[2]
+	v_index = lowered.index('values')
+	if opts.vars[3] == '(':
+		for arg in opts.vars[3:v_index-2]:
+			if arg is not ')':
+				colname_list.append(arg[:-1])
+		colname_list.append(opts.vars[v_index-2])
+	if opts.vars[v_index+1] == '(':
+		for arg in opts.vars[v_index+2:-2]:
+			if arg is not ')':
+				value_list.append(arg[:-1])
+		value_list.append(opts.vars[-2])
+
+
+	cutil._insert(table_name, colname_list, value_list)
+
+
+if(first_word == "delete" and second_word == "from"):
+	table_name = opts.vars[3]
+	colname_list = []
+	value_list = []
+	condition_list = []
+	if (len(opts.vars) > 3 and opts.vars[4] == 'where'):
+		for i in range(5,len(opts.vars),3):
+			if opts.vars[i] is not ')' :
+				colname_list.append(opts.vars[i])
+				condition_list.append(opts.vars[i+1])
+				value_list.append(opts.vars[i+2])
+
+	cutil._delete(table_name, colname_list, condition_list, value_list)
+
+
+# if(first_word == "update"):
+# 	table_name = second_word
+# 	where_index = lowered.index('where') 
+# 	if opts.vars[3] == "set":
+# 		before_where = opts.vars[4:where_index]
+# 		for i in range(0,len(before_where),3):
+# 			colname_list.append(opts.vars[i])
+# 			condition_list.append(opts.vars[i+1])
+# 			value_list.append(opts.vars[i+2])
