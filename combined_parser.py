@@ -68,6 +68,7 @@ if(first_word == "select"):
 	view_colname_list = []
 	condition_list = []
 	value_list = []
+	mmcas_list = []
 	andor = ""
 	f_index = lowered.index('from') 
 	table_name = opts.vars[f_index+1]
@@ -79,8 +80,10 @@ if(first_word == "select"):
 			if opts.vars[i] is not ')' :
 				if opts.vars[i] == "and":
 					andor = "and"
+					i += 1
 				elif opts.vars[i] == "or":
 					andor = "or"
+					i += 1
 				colname_list.append(opts.vars[i])
 				condition_list.append(opts.vars[i+1])
 				value_list.append(opts.vars[i+2])
@@ -90,7 +93,7 @@ if(first_word == "select"):
 	# print(view_colname_list)
 	# print(value_list)
 	# print(condition_list)
-	cutil._select(table_name, view_colname_list, colname_list, condition_list, value_list, andor)
+	cutil._select(table_name, view_colname_list, mmcas_list, colname_list, condition_list, value_list, andor)
 
 if(first_word == "insert" and second_word == "into"):
 	colname_list = []
@@ -127,12 +130,40 @@ if(first_word == "delete" and second_word == "from"):
 	cutil._delete(table_name, colname_list, condition_list, value_list)
 
 
-# if(first_word == "update"):
-# 	table_name = second_word
-# 	where_index = lowered.index('where') 
-# 	if opts.vars[3] == "set":
-# 		before_where = opts.vars[4:where_index]
-# 		for i in range(0,len(before_where),3):
-# 			colname_list.append(opts.vars[i])
-# 			condition_list.append(opts.vars[i+1])
-# 			value_list.append(opts.vars[i+2])
+if(first_word == "update"):
+	table_name = second_word
+	where_index = 0
+	colname_list = []
+	update_colname_list = []
+	value_list = []
+	update_value_list = []
+	condition_list = []
+	andor = ""
+	if 'where' in lowered:
+		where_index = lowered.index('where') 
+	if opts.vars[3] == "set":
+		if where_index == 0:
+			for i in range(0,len(opts.vars),3):
+				update_colname_list.append(opts.vars[i])
+				condition_list.append(opts.vars[i+1])
+				update_value_list.append(opts.vars[i+2])
+		elif where_index != 0:
+			before_where = opts.vars[4:where_index]
+			after_where = opts.vars[where_index+1:]
+			for i in range(0,len(before_where),3):
+				colname_list.append(before_where[i])
+				condition_list.append(before_where[i+1])
+				value_list.append(before_where[i+2])
+			for j in range (0, after_where, 3):
+				if after_where[j] is not ')' :
+					if after_where[j] == "and":
+						andor = "and"
+						j += 1
+					elif after_where[j] == "or":
+						andor = "or"
+						j += 1
+					colname_list.append(after_where[j])
+					condition_list.append(after_where[j+1])
+					value_list.append(after_where[j+2])
+
+	cutil._update(table_name, update_colname_list, update_value_list, colname_list, condition_list, value_list, andor)
