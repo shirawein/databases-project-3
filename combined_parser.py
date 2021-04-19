@@ -98,19 +98,19 @@ if(first_word == "select"):
 				condition_list.append(opts.vars[i+1])
 				value_list.append(opts.vars[i+2])
 
-	# print(colname_list)
-	# print(table_name)
-	# print(view_colname_list)
-	# print(value_list)
-	# print(condition_list)
-
 	updated_view_colname_list = []
 
 	for item in view_colname_list:
-		if item[-1] == ',':
-			updated_view_colname_list.append(item[:-1])
-		else:
-			updated_view_colname_list.append(item)
+		result = item.rstrip(',')
+		updated.view_colname_list.append(result)
+			
+	print(table_name)
+	print(updated_view_colname_list)
+	print(mmcas_list)
+	print(colname_list)
+	print(condition_list)
+	print(value_list)
+	print(andor)
 
 	cutil._select(table_name, updated_view_colname_list, mmcas_list, colname_list, condition_list, value_list, andor)
 
