@@ -104,13 +104,13 @@ if(first_word == "select"):
 		result = item.rstrip(',')
 		updated.view_colname_list.append(result)
 			
-	print(table_name)
-	print(updated_view_colname_list)
-	print(mmcas_list)
-	print(colname_list)
-	print(condition_list)
-	print(value_list)
-	print(andor)
+	print("table name ", table_name)
+	print("updated view ", updated_view_colname_list)
+	print("mmcas list ", mmcas_list)
+	print("colname ", colname_list)
+	print("condition ", condition_list)
+	print("valie ", value_list)
+	print("andor ", andor)
 
 	cutil._select(table_name, updated_view_colname_list, mmcas_list, colname_list, condition_list, value_list, andor)
 
