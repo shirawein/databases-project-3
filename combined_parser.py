@@ -45,7 +45,7 @@ if(first_word == "create" and second_word == "table"):
 		# print("len ", len(opts.vars[4:]))
 		for i in range(4,len(opts.vars),2):
 			# print("i: ", i)
-			if opts.vars[i] is not ')' :
+			if opts.vars[i] != ')' :
 				colname_list.append(opts.vars[i])
 				if(opts.vars[i+1][-1] == ','):
 					datatype_list.append(opts.vars[i+1][:-1])
@@ -87,7 +87,7 @@ if(first_word == "select"):
 	# view_colname_list.append(opts.vars[f_index-1])
 	if (len(opts.vars) > (f_index+1) and opts.vars[f_index+1] == 'where'):
 		for i in range(f_index+2,len(opts.vars),3):
-			if opts.vars[i] is not ')' :
+			if opts.vars[i] != ')' :
 				if opts.vars[i] == "and":
 					andor = "and"
 					i += 1
@@ -102,7 +102,7 @@ if(first_word == "select"):
 
 	for item in view_colname_list:
 		result = item.rstrip(',')
-		updated.view_colname_list.append(result)
+		updated_view_colname_list.append(result)
 			
 	print("table name ", table_name)
 	print("updated view ", updated_view_colname_list)
@@ -121,12 +121,12 @@ if(first_word == "insert" and second_word == "into"):
 	v_index = lowered.index('values')
 	if opts.vars[3] == '(':
 		for arg in opts.vars[3:v_index-2]:
-			if arg is not ')':
+			if arg != ')':
 				colname_list.append(arg[:-1])
 		colname_list.append(opts.vars[v_index-2])
 	if opts.vars[v_index+1] == '(':
 		for arg in opts.vars[v_index+2:-2]:
-			if arg is not ')':
+			if arg != ')':
 				value_list.append(arg[:-1])
 		value_list.append(opts.vars[-2])
 
@@ -141,7 +141,7 @@ if(first_word == "delete" and second_word == "from"):
 	condition_list = []
 	if (len(opts.vars) > 3 and opts.vars[4] == 'where'):
 		for i in range(5,len(opts.vars),3):
-			if opts.vars[i] is not ')' :
+			if opts.vars[i] != ')' :
 				colname_list.append(opts.vars[i])
 				condition_list.append(opts.vars[i+1])
 				value_list.append(opts.vars[i+2])
@@ -174,7 +174,7 @@ if(first_word == "update"):
 				condition_list.append(before_where[i+1])
 				value_list.append(before_where[i+2])
 			for j in range (0, after_where, 3):
-				if after_where[j] is not ')' :
+				if after_where[j] != ')' :
 					if after_where[j] == "and":
 						andor = "and"
 						j += 1
