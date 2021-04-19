@@ -26,7 +26,7 @@ opts = parser.parse_args()
 
 #parse first word
 first_word = str(opts.vars[0]).lower()
-# print(first_word)
+print(first_word)
 second_word = str(opts.vars[1]).lower()
 # print(second_word)
 
@@ -64,7 +64,6 @@ if(first_word == "drop" and second_word == "table"):
 	cutil._drop_table(table_name)
 
 if(first_word == "select"):
-	print(first_word)
 	colname_list = []
 	view_colname_list = []
 	condition_list = []
