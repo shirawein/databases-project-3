@@ -26,9 +26,9 @@ opts = parser.parse_args()
 
 #parse first word
 first_word = str(opts.vars[0]).lower()
-print(first_word)
+# print(first_word)
 second_word = str(opts.vars[1]).lower()
-print(second_word)
+# print(second_word)
 
 lowered = [element.lower() for element in opts.vars]
 
@@ -64,7 +64,6 @@ if(first_word == "drop" and second_word == "table"):
 	cutil._drop_table(table_name)
 
 if(first_word == "select"):
-	print(opts.vars)
 	colname_list = []
 	view_colname_list = []
 	condition_list = []
@@ -82,7 +81,6 @@ if(first_word == "select"):
 			view_colname_list.append(before_from[element])
 			element += 1
 		else:
-			mmcas_list.append("")
 			view_colname_list.append(before_from[element])
 	# view_colname_list.append(opts.vars[f_index-1])
 	if (len(opts.vars) > (f_index+1) and opts.vars[f_index+1] == 'where'):
