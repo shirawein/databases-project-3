@@ -64,6 +64,7 @@ if(first_word == "drop" and second_word == "table"):
 	cutil._drop_table(table_name)
 
 if(first_word == "select"):
+	print(first_word)
 	colname_list = []
 	view_colname_list = []
 	condition_list = []
