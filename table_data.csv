@@ -1,1 +1,3 @@
-table_name,nrows,ncols,datatype_list
+table_name,nrows,ncols,datatype_list,primary_key_list
+table_name_test,0,2,"['int', 'varchar 20']","['idd', 'namee']"
+employee,0,4,"['int', 'varchar(30)', 'varchar(30)', 'int']","['id', 'role']"

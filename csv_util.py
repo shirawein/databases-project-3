@@ -19,19 +19,19 @@ def condition_function(obj1, sign, obj2):
 		if obj1 == obj2:
 			return True
 	elif sign == '<':
-		if obj1 < obj2:
+		if int(obj1) < int(obj2):
 			return True
 	elif sign == '>':
-		print(obj1)
-		print(obj2)
-		print(obj1 > obj2)
-		if obj1 > obj2:
+		#print(obj1)
+		#print(obj2)
+		#print(int(obj1) > int(obj2))
+		if int(obj1) > int(obj2):
 			return True
 	elif sign == '<=':
-		if obj1 <= obj2:
+		if int(obj1) <= int(obj2):
 			return True
 	elif sign == '>=':
-		if obj1 >= obj2:
+		if int(obj1) >= int(obj2):
 			return True
 	return False
 
@@ -339,10 +339,10 @@ def _select(table_name, view_colname_list, mmcas_list, colname_list, condition_l
 					new_row.append(row[view_colname_locs[i]])
 				lines.append(new_row)
 
-	print(lines)
+#	print(lines)
 	if mmcas_list:
 		return mmcas_function(lines, mmcas_list)
-
+	print(lines)
 	return lines
 
 
@@ -359,16 +359,39 @@ def _select(table_name, view_colname_list, mmcas_list, colname_list, condition_l
 
 #_select('table_name_test', ['idd', 'namee'], ['avg', 'max'], ['idd', 'namee'], ['<', '='], [19, 'kujt'], 'or')
 
-#_select('table_name_test', ['idd', 'namee'], [], [], [], [], '')
+#_select('table_name_test', ['idd', 'namee', 'namee'], [], [], [], [], '')
 
 #_update('table_name_test', ['idd'], ['24'], ['namee', 'idd'], ['=', '>='], ['zxcvb', 22], 'or')
 
+#######################################
 
+#select id, name, role, salary from employee;
 
+#_select('employee', ['id', 'role', 'role', 'salary'], [], [], [], [], '')
 
+#select id, role, name from employee where salary > 1000 and role = 'engineer';
 
+#_select('employee', ['id', 'role', 'name'], [], ['salary', 'role'], ['>', '='], [900, 'engineer'], 'and')
 
+#select max(salary), count(id), avg(salary), min(salary), sum(id) from employee where role = 'manager' or id < 19;
 
+#_select('employee', ['salary', 'id', 'salary', 'salary', 'id'], ['max', 'count', 'avg', 'min', 'sum'], ['role', 'id'], ['=', '<'], ['manager', 19], 'or')
+
+#update employee set role = 'engineer2' where salary > 1300 and role = 'engineer';
+
+#_update('employee', ['role'], ['engineer2'], ['salary', 'role'], ['>', '='], [1300, 'engineer'], 'and')
+
+#insert into employee \('name', 'role', 'salary', 'id'\) values \('qqqq', 'manager', '1900', 31\);
+
+#_insert('employee', ['name', 'role', 'salary', 'id'], ['qqqq', 'manager', 1900, 31])
+
+#delete from employee where id < 5 and role = 'engineer' and salary < 1300;
+
+#_delete('employee', ['id', 'role', 'salary'], ['>', '=', '>'], [5, 'engineer2', 1300])
+
+#create table employee \( 'id' int, 'name' varchar\(30\), 'role' varchar\(30\), 'salary' int, primary key \( 'id'\) \);
+
+#_create_table('employeee', 0, 4, ['int', 'varchar(20)', 'varchar(20)', 'int'], ['id', 'name', 'role', 'salary'], ['id', 'role'])
 
 
 
