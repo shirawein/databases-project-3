@@ -26,7 +26,7 @@ opts = parser.parse_args()
 
 #parse first word
 first_word = str(opts.vars[0]).lower()
-print(first_word)
+# print(first_word)
 second_word = str(opts.vars[1]).lower()
 # print(second_word)
 
@@ -83,15 +83,18 @@ if(first_word == "select"):
 		else:
 			view_colname_list.append(before_from[element])
 	# view_colname_list.append(opts.vars[f_index-1])
-	if (len(opts.vars) > (f_index+1) and opts.vars[f_index+1] == 'where'):
-		for i in range(f_index+2,len(opts.vars),3):
+	if (len(opts.vars) > (f_index+2) and opts.vars[f_index+2] == 'where'):
+		and_count = 0
+		or_count = 0
+		for j in range(f_index+3,len(opts.vars)):
+			if opts.vars[j] == "and":
+				and_count += 1
+				andor = "and"
+			if opts.vars[j] == "or":
+				or_count += 1
+				andor = "or"
+		for i in range(f_index+3,(len(opts.vars) - and_count - or_count),3):
 			if opts.vars[i] != ')' :
-				if opts.vars[i] == "and":
-					andor = "and"
-					i += 1
-				elif opts.vars[i] == "or":
-					andor = "or"
-					i += 1
 				colname_list.append(opts.vars[i])
 				condition_list.append(opts.vars[i+1])
 				value_list.append(opts.vars[i+2])
@@ -102,13 +105,13 @@ if(first_word == "select"):
 		result = item.rstrip(',')
 		updated_view_colname_list.append(result)
 			
-	print("table name ", table_name)
-	print("updated view ", updated_view_colname_list)
-	print("mmcas list ", mmcas_list)
-	print("colname ", colname_list)
-	print("condition ", condition_list)
-	print("valie ", value_list)
-	print("andor ", andor)
+	# print("table name ", table_name)
+	# print("updated view ", updated_view_colname_list)
+	# print("mmcas list ", mmcas_list)
+	# print("colname ", colname_list)
+	# print("condition ", condition_list)
+	# print("value ", value_list)
+	# print("andor ", andor)
 
 	cutil._select(table_name, updated_view_colname_list, mmcas_list, colname_list, condition_list, value_list, andor)
 
@@ -182,5 +185,6 @@ if(first_word == "update"):
 					colname_list.append(after_where[j])
 					condition_list.append(after_where[j+1])
 					value_list.append(after_where[j+2])
+
 
 	cutil._update(table_name, update_colname_list, update_value_list, colname_list, condition_list, value_list, andor)
