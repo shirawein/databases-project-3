@@ -2,6 +2,15 @@ import csv
 import os
 import re
 
+def count_rows(tablename):
+	i = 0
+	filename = tablename + ".csv"
+	with open(filename, 'r') as readFile:
+		reader = csv.reader(readFile)
+		for row in reader:
+			i += 1
+	return i
+
 def merge(list1, list2):
       
     merged_list = [(list1[i], list2[i]) for i in range(0, len(list1))]
@@ -345,6 +354,129 @@ def _select(table_name, view_colname_list, mmcas_list, colname_list, condition_l
 	print(lines)
 	return lines
 
+def _join(table_name_list, table1_col_list, table2_col_list, matchcol_table1, matchcol_table2, join_type, optimization):
+
+	file1_name= table_name_list[0] + ".csv"
+	file2_name= table_name_list[1] + ".csv"
+
+	# check if tables exist
+	for i in range(2):
+		table_name = table_name_list[i]
+		flag = 0
+		with open('table_data.csv') as readFile:
+			reader = csv.reader(readFile, delimiter=',')
+			for row in reader:
+				if row[0] == table_name:
+					flag = 1
+					break
+		if flag == 0 or not os.path.exists(table_name_list[i] + ".csv"):
+			print("The table: {} does not exist!".format(table_name_list[i]))
+			return
+
+	# get the sorted complete col names
+	with open(file1_name, 'r') as readFile:
+		reader = csv.reader(readFile)
+		for row in reader:
+			sorted_colname_list1 = row
+			break
+	# get the sorted complete col names
+	with open(file2_name, 'r') as readFile:
+		reader = csv.reader(readFile)
+		for row in reader:
+			sorted_colname_list2 = row
+			break	
+
+	view_colname_locs1 = []
+	for i in range(0,len(table1_col_list)):
+		view_colname_locs1.append(get_loc(table1_col_list[i], sorted_colname_list1))
+	view_colname_locs2 = []
+	for i in range(0,len(table2_col_list)):
+		view_colname_locs2.append(get_loc(table2_col_list[i], sorted_colname_list2))
+
+	matchcol_table1_loc = get_loc(matchcol_table1, sorted_colname_list1)
+	matchcol_table2_loc = get_loc(matchcol_table2, sorted_colname_list2)
+
+	outer_file = file1_name
+	inner_file = file2_name
+	outer_match_loc = matchcol_table1_loc
+	inner_match_loc = matchcol_table2_loc
+	outer_view_colname_locs = view_colname_locs1
+	inner_view_colname_locs = view_colname_locs2
+	if join_type == 'inner' or join_type == 'full':
+		if optimization == 'off' and count_rows(table_name_list[0]) > count_rows(table_name_list[1]):
+			outer_file = file2_name
+			inner_file = file1_name
+			outer_match_loc = matchcol_table2_loc
+			inner_match_loc = matchcol_table1_loc
+			outer_view_colname_locs = view_colname_locs2
+			inner_view_colname_locs = view_colname_locs1
+		elif optimization == 'on' and count_rows(table_name_list[0]) < count_rows(table_name_list[1]):
+			outer_file = file2_name
+			inner_file = file1_name
+			outer_match_loc = matchcol_table2_loc
+			inner_match_loc = matchcol_table1_loc
+			outer_view_colname_locs = view_colname_locs2
+			inner_view_colname_locs = view_colname_locs1
+
+	lines = list()
+	with open(outer_file, 'r') as outer_readFile:
+		outer_reader = csv.reader(outer_readFile)
+		ofirst_row = True
+		inner_mark = [0] * count_rows(inner_file[:-4])
+		for outer_row in outer_reader:
+			if ofirst_row:
+				ofirst_row = False
+				continue
+			flag2 = False
+			with open(inner_file, 'r') as inner_readFile:
+				inner_reader = csv.reader(inner_readFile)
+				first_row = True
+				k = -1
+				ifirst_row = True
+				for inner_row in inner_reader:
+					if ifirst_row == True:
+						ifirst_row = False
+						continue
+					k += 1
+					line = []
+					if (outer_row[outer_match_loc] == inner_row[inner_match_loc]):
+						inner_mark[k] = 1
+						flag2 = True
+						for k in range(len(outer_view_colname_locs)):
+							line.append(outer_row[outer_view_colname_locs[k]])
+						for k in range(len(inner_view_colname_locs)):
+							line.append(inner_row[inner_view_colname_locs[k]])
+						lines.append(line)
+			if flag2 == False and (join_type == 'full' or join_type == 'left'):
+				line = []
+				for k in range(len(outer_view_colname_locs)):
+					line.append(outer_row[outer_view_colname_locs[k]])
+				for k in range(len(inner_view_colname_locs)):
+					line.append('NULL')
+				lines.append(line)
+
+		if join_type == 'full' or join_type == 'right':
+			with open(inner_file, 'r') as inner_readFile:
+				first_row = True
+				inner_reader = csv.reader(inner_readFile)
+				k = -1
+				for inner_row in inner_reader:
+					if first_row:
+						first_row = False
+						continue
+					k += 1
+					if inner_mark[k] == 0:
+						line = []
+						for k in range(len(outer_view_colname_locs)):
+							line.append('NULL')
+						for k in range(len(inner_view_colname_locs)):
+							line.append(inner_row[inner_view_colname_locs[k]])
+						lines.append(line)	
+
+	print(lines)
+	return lines					
+
+
 
 #_init_storage()
 #_drop_table('table_name_test')
@@ -365,33 +497,49 @@ def _select(table_name, view_colname_list, mmcas_list, colname_list, condition_l
 
 #######################################
 
-#select id, name, role, salary from employee;
+# select id, name, role, salary from employee;
 
-#_select('employee', ['id', 'role', 'role', 'salary'], [], [], [], [], '')
+# _select('employee', ['id', 'name', 'role', 'salary'], [], [], [], [], '')
 
-#select id, role, name from employee where salary > 1000 and role = 'engineer';
+# select id, role, name from employee where salary \> 900 and role = 'engineer';
 
-#_select('employee', ['id', 'role', 'name'], [], ['salary', 'role'], ['>', '='], [900, 'engineer'], 'and')
+# _select('employee', ['id', 'role', 'name'], [], ['salary', 'role'], ['>', '='], [900, 'engineer'], 'and')
 
-#select max(salary), count(id), avg(salary), min(salary), sum(id) from employee where role = 'manager' or id < 19;
+# select max \( salary \), count \( id \), avg \( salary \), min \( salary \), sum \( id \) from employee where role = 'manager' or id \< 19;
 
-#_select('employee', ['salary', 'id', 'salary', 'salary', 'id'], ['max', 'count', 'avg', 'min', 'sum'], ['role', 'id'], ['=', '<'], ['manager', 19], 'or')
+# _select('employee', ['salary', 'id', 'salary', 'salary', 'id'], ['max', 'count', 'avg', 'min', 'sum'], ['role', 'id'], ['=', '<'], ['manager', 19], 'or')
 
-#update employee set role = 'engineer2' where salary > 1300 and role = 'engineer';
+# update employee set role = 'engineer2' where salary \> 1300 and role = 'engineer';
 
-#_update('employee', ['role'], ['engineer2'], ['salary', 'role'], ['>', '='], [1300, 'engineer'], 'and')
+# _update('employee', ['role'], ['engineer2'], ['salary', 'role'], ['>', '='], [1300, 'engineer'], 'and')
 
-#insert into employee \('name', 'role', 'salary', 'id'\) values \('qqqq', 'manager', '1900', 31\);
+# insert into employee \( 'name', 'role', 'salary', 'id' \) values \( 'qqqq', 'manager', '1900', 31 \);
 
-#_insert('employee', ['name', 'role', 'salary', 'id'], ['qqqq', 'manager', 1900, 31])
+# _insert('employee', ['name', 'role', 'salary', 'id'], ['qqqq', 'manager', 1900, 31])
 
-#delete from employee where id < 5 and role = 'engineer' and salary < 1300;
+# delete from employee where id \< 5 and role = 'engineer' and salary \< 1300;
 
-#_delete('employee', ['id', 'role', 'salary'], ['>', '=', '>'], [5, 'engineer2', 1300])
+# _delete('employee', ['id', 'role', 'salary'], ['>', '=', '>'], [5, 'engineer2', 1300])
 
-#create table employee \( 'id' int, 'name' varchar\(30\), 'role' varchar\(30\), 'salary' int, primary key \( 'id'\) \);
+# create table employee \( 'id' int, 'name' varchar\(30\), 'role' varchar\(30\), 'salary' int, primary key \( 'id', 'role' \) \);
 
-#_create_table('employeee', 0, 4, ['int', 'varchar(20)', 'varchar(20)', 'int'], ['id', 'name', 'role', 'salary'], ['id', 'role'])
+# _create_table('employeee', 0, 4, ['int', 'varchar(20)', 'varchar(20)', 'int'], ['id', 'name', 'role', 'salary'], ['id', 'role'])
+
+# select employee.id, employee.name, project.name, project.sector from employee full join project on employee.id = project.empid;
+
+#_join(['employee', 'project'], ['id', 'name'], ['name', 'sector'], 'id', 'empid', 'right', 'off');
+
+# project,0,4,"['int', 'varchar(30)', 'varchar(30)', 'int']","['id']"
+
+#_create_table('sample1', 0, 4, ['int', 'varchar(20)', 'varchar(20)', 'int'], ['id', 'name', 'sector', 'empid'], ['id'])
+
+#create table sample1 \( 'id' int, 'name' varchar\(30\), 'role' varchar\(30\), 'salary' int, primary key \( 'id' \) \);
+
+#_create_table('sample2', 0, 4, ['int', 'varchar(20)', 'varchar(20)', 'int'], ['id', 'name', 'sector', 'empid'], ['id', 'empid'])
+
+#create table sample2 \( 'id' int, 'name' varchar\(30\), 'role' varchar\(30\), 'salary' int, primary key \( 'id', 'salary' \) \);
+
+
 
 
 
