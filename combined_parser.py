@@ -74,30 +74,33 @@ if(first_word == "select"):
 	f_index = lowered.index('from') 
 	table_name = opts.vars[f_index+1]
 	before_from = opts.vars[1:f_index]
-	for element in range(0,len(before_from)):
+	element = 0
+	while element < len(before_from):
 		if before_from[element].lower() in mmcas_operations:
 			mmcas_list.append(before_from[element].lower())
-			element += 1
+			element += 2
 			view_colname_list.append(before_from[element])
-			element += 1
+			element += 2
 		else:
 			view_colname_list.append(before_from[element])
+			element += 1
 	# view_colname_list.append(opts.vars[f_index-1])
 	if (len(opts.vars) > (f_index+2) and opts.vars[f_index+2] == 'where'):
-		and_count = 0
-		or_count = 0
-		for j in range(f_index+3,len(opts.vars)):
-			if opts.vars[j] == "and":
-				and_count += 1
+		i = f_index+3
+		while i < (len(opts.vars)):
+			if opts.vars[i] == "and":
+				i += 1
 				andor = "and"
-			if opts.vars[j] == "or":
-				or_count += 1
+				continue
+			if opts.vars[i] == "or":
+				i += 1
 				andor = "or"
-		for i in range(f_index+3,(len(opts.vars) - and_count - or_count),3):
+				continue
 			if opts.vars[i] != ')' :
 				colname_list.append(opts.vars[i])
 				condition_list.append(opts.vars[i+1])
 				value_list.append(opts.vars[i+2])
+				i = i + 3
 
 	updated_view_colname_list = []
 
