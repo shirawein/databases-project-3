@@ -194,15 +194,13 @@ if(first_word == "select"):
 	if joinval == 0:
 		cutil._select(table_name, final_view_colname, mmcas_list, final_colname, condition_list, final_value, andor)
 	if joinval == 1:
-		print(table_name_list)
-		print(table1_col_list)
-		print(table2_col_list)
-		print(matchcol_table1)
-		print(matchcol_table2)
-		print(join_type)
+# 		print(table_name_list)
+# 		print(table1_col_list)
+# 		print(table2_col_list)
+# 		print(matchcol_table1)
+# 		print(matchcol_table2)
+# 		print(join_type)
 		cutil._join(table_name_list, table1_col_list, table2_col_list, matchcol_table1, matchcol_table2, join_type, 'off')
-
-
 
 
 if(first_word == "insert" and second_word == "into"):
