@@ -88,6 +88,7 @@ if(first_word == "drop" and second_word == "table"):
 	cutil._drop_table(table_name)
 
 if(first_word == "select"):
+	joinval = 0
 	colname_list = []
 	view_colname_list = []
 	condition_list = []
@@ -95,8 +96,20 @@ if(first_word == "select"):
 	mmcas_list = []
 	andor = ""
 	mmcas_operations = ["max","min","count","sum","avg"]
+
+	table1_col_list = []
+	table2_col_list = []
+	table_name2 = ""
+	mathcols = []
+	matchcol_table1 = ""
+	matchcol_table2 = ""
+	join_type = ""
+
 	f_index = lowered.index('from') 
 	table_name = opts.vars[f_index+1]
+	table_name_list = []
+	table_name_list.append(table_name)
+
 	before_from = opts.vars[1:f_index]
 	element = 0
 	while element < len(before_from):
@@ -125,6 +138,13 @@ if(first_word == "select"):
 				condition_list.append(opts.vars[i+1])
 				value_list.append(opts.vars[i+2])
 				i = i + 3
+	elif (len(opts.vars) > (f_index+3) and opts.vars[f_index+3] == 'join'):
+		join_type = (opts.vars[f_index+2]).lower()
+		table_name2 = opts.vars[f_index+4]
+		table_name_list.append(table_name2)
+		joinval = 1
+		mathcols.append(opts.vars[f_index+6])
+		mathcols.append(opts.vars[f_index+8])
 
 	updated_view_colname_list = []
 
@@ -155,7 +175,35 @@ if(first_word == "select"):
 		result = item.rstrip(',')
 		final_value.append(result)
 
-	cutil._select(table_name, final_view_colname, mmcas_list, final_colname, condition_list, final_value, andor)
+	for item in final_view_colname:
+		result = item.rstrip(',')
+		stripped = result.split('.')[1]
+		if result.startswith(table_name):
+			table1_col_list.append(stripped)
+		elif result.startswith(table_name2):
+			table2_col_list.append(stripped)
+
+	for item in mathcols:
+		result = item.rstrip(';')
+		stripped = result.split('.')[1]
+		if result.startswith(table_name):
+			matchcol_table1 = stripped
+		elif result.startswith(table_name2):
+			matchcol_table2 = stripped
+
+	if joinval == 0:
+		cutil._select(table_name, final_view_colname, mmcas_list, final_colname, condition_list, final_value, andor)
+	if joinval == 1:
+		print(table_name_list)
+		print(table1_col_list)
+		print(table2_col_list)
+		print(matchcol_table1)
+		print(matchcol_table2)
+		print(join_type)
+		cutil._join(table_name_list, table1_col_list, table2_col_list, matchcol_table1, matchcol_table2, join_type, 'off')
+
+
+
 
 if(first_word == "insert" and second_word == "into"):
 	colname_list = []
@@ -300,4 +348,3 @@ if(first_word == "update"):
 		final_view_value.append(result)	
 
 	cutil._update(table_name, final_view_colname, final_view_value, final_colname, condition_list, final_value, andor)
-
