@@ -192,11 +192,6 @@ def _create_index(index_name, table_name, col_name):
 		print(list(t.values()))
 
 
-	# t = OOBTree()
-	# t.update({1: "red", 2: "green", 3: "blue", 4: "spades"})
-	# print(list(t.values()))
-#	config_dictionary = {'remote_hostname': 'google.com', 'remote_port': 80}
-
 	index_file = index_name + '.' + table_name
 	with open(index_file, 'wb') as save_file:
 		pickle.dump(t, save_file)
