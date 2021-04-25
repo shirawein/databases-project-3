@@ -389,6 +389,7 @@ def _delete(table_name, colname_list, condition_list, value_list):
 			break	
 
 ####
+	index_flag = False
 	with open('index_data.csv', 'r') as readFile:
 		reader = csv.reader(readFile)
 		for row in reader:
@@ -474,6 +475,7 @@ def _update(table_name, update_colname_list, update_value_list, colname_list, co
 			break	
 
 ####
+	index_flag = False
 	with open('index_data.csv', 'r') as readFile:
 		reader = csv.reader(readFile)
 		for row in reader:
