@@ -49,9 +49,15 @@ if(first_word == "create" and second_word == "table"):
 				break
 			if opts.vars[i] != ')' :
 				if(opts.vars[i] == "primary"):
-					primary_key_list.append(opts.vars[i+3])
-					i += 4
-
+					after_primary = opts.vars[i+3:]
+					j = 0
+					while j < len(after_primary):
+						if after_primary[j] == ')':
+							break
+						if after_primary[j] != ')' :
+							primary_key_list.append(after_primary[j])
+							j += 1
+					break
 				else:
 					colname_list.append(opts.vars[i])
 					i += 1
@@ -428,3 +434,4 @@ if(first_word == "bulk" and second_word == "insert"):
 			values.append(item)
 			values.append(1)
 			cutil._insert(table_name, colnames, values)
+
