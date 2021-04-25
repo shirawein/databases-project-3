@@ -181,7 +181,7 @@ if(first_word == "select"):
 		result = item.rstrip(',')
 		final_value.append(result)
 
-	print("colname : " , final_view_colname)
+	# print("colname : " , final_view_colname)
 
 	for item in final_view_colname:
 		result = item.rstrip(',')
@@ -193,7 +193,7 @@ if(first_word == "select"):
 		elif result.startswith(table_name2):
 			table2_col_list.append(stripped)
 
-	print("matchcols : ", mathcols)
+	# print("matchcols : ", mathcols)
 
 	for item in mathcols:
 		result = item.rstrip(';')
