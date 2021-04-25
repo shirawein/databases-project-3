@@ -370,7 +370,10 @@ if(first_word == "create" and second_word == "index"):
 		result = item.rstrip(',')
 		final_colname.append(result)
 
-	cutil._create_index(index_name, table_name, final_colname)
+	# only supporting one column name
+	colname = colname_list[0]
+	
+	cutil._create_index(index_name, table_name, colname)
 
 
 if(first_word == "drop" and second_word == "index"):
