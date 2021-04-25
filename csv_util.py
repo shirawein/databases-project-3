@@ -265,6 +265,17 @@ def _drop_table(table_name):
 	else:
 		print("The table: {} does not exist!".format(table_name))
 
+	if flag == 1:
+		del_list = []
+		with open('index_data.csv', 'r') as readFile:
+			reader = csv.reader(readFile)
+			for row in reader:
+				if row[1] == table_name:
+					del_list.append([table_name, row[0]])
+
+		for element in del_list:
+			_drop_index(element[0], element[1])
+
 
 def _insert(table_name, colname_list, value_list):
 
@@ -819,7 +830,7 @@ def _join(table_name_list, table1_col_list, table2_col_list, matchcol_table1, ma
 
 # create table employee \( 'id' int, 'name' varchar\(30\), 'role' varchar\(30\), 'salary' int, primary key \( 'id', 'role' \) \);
 
-# _create_table('employeee', 0, 4, ['int', 'varchar(20)', 'varchar(20)', 'int'], ['id', 'name', 'role', 'salary'], ['id', 'role'])
+#_create_table('employeee', 0, 4, ['int', 'varchar(20)', 'varchar(20)', 'int'], ['id', 'name', 'role', 'salary'], ['id', 'role'])
 
 # select employee.id, employee.name, project.name, project.sector from employee full join project on employee.id = project.empid;
 
@@ -836,7 +847,7 @@ def _join(table_name_list, table1_col_list, table2_col_list, matchcol_table1, ma
 #create table sample2 \( 'id' int, 'name' varchar\(30\), 'role' varchar\(30\), 'salary' int, primary key \( 'id', 'salary' \) \);
 
 #_init_index();
-#_create_index('salary_index', 'employee', 'salary');
+#_create_index('salary_index2', 'employeee', 'salary');
 #_index_test('salary_index', 'employee');
 
 #_select('employee', ['id', 'role', 'name'], [], ['salary', 'role'], ['>', '='], [1100, 'engineer'], 'and')
@@ -852,4 +863,4 @@ def _join(table_name_list, table1_col_list, table2_col_list, matchcol_table1, ma
 
 #_drop_index('employee', 'salary_index')
 
-
+#_drop_table('employeee');
