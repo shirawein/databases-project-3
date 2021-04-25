@@ -181,33 +181,39 @@ if(first_word == "select"):
 		result = item.rstrip(',')
 		final_value.append(result)
 
+	print("colname : " , final_view_colname)
+
 	for item in final_view_colname:
 		result = item.rstrip(',')
+		stripped = ""
 		if '.' in result:
-			result = result.split('.')[1]
+			stripped = result.split('.')[1]
 		if result.startswith(table_name):
-			table1_col_list.append(result)
+			table1_col_list.append(stripped)
 		elif result.startswith(table_name2):
-			table2_col_list.append(result)
+			table2_col_list.append(stripped)
+
+	print("matchcols : ", mathcols)
 
 	for item in mathcols:
 		result = item.rstrip(';')
+		stripped = ""
 		if '.' in result:
-			result = result.split('.')[1]
+			stripped = result.split('.')[1]
 		if result.startswith(table_name):
-			matchcol_table1 = result
+			matchcol_table1 = stripped
 		elif result.startswith(table_name2):
-			matchcol_table2 = result
+			matchcol_table2 = stripped
 
 	if joinval == 0:
 		cutil._select(table_name, final_view_colname, mmcas_list, final_colname, condition_list, final_value, andor)
 	if joinval == 1:
-		print(table_name_list)
-		print(table1_col_list)
-		print(table2_col_list)
-		print(matchcol_table1)
-		print(matchcol_table2)
-		print(join_type)
+		# print(table_name_list)
+		# print(table1_col_list)
+		# print(table2_col_list)
+		# print(matchcol_table1)
+		# print(matchcol_table2)
+		# print(join_type)
 		cutil._join(table_name_list, table1_col_list, table2_col_list, matchcol_table1, matchcol_table2, join_type, 'off')
 
 
