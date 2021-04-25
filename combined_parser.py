@@ -194,13 +194,15 @@ if(first_word == "select"):
 	if joinval == 0:
 		cutil._select(table_name, final_view_colname, mmcas_list, final_colname, condition_list, final_value, andor)
 	if joinval == 1:
-# 		print(table_name_list)
-# 		print(table1_col_list)
-# 		print(table2_col_list)
-# 		print(matchcol_table1)
-# 		print(matchcol_table2)
-# 		print(join_type)
+		print(table_name_list)
+		print(table1_col_list)
+		print(table2_col_list)
+		print(matchcol_table1)
+		print(matchcol_table2)
+		print(join_type)
 		cutil._join(table_name_list, table1_col_list, table2_col_list, matchcol_table1, matchcol_table2, join_type, 'off')
+
+
 
 
 if(first_word == "insert" and second_word == "into"):
@@ -316,6 +318,32 @@ if(first_word == "update"):
 				condition_list.append(after_where[j+1])
 				value_list.append(after_where[j+2])
 				j = j + 3
+
+	if(first_word == "create" and second_word == "index"):
+		index_name = opts.vars[2]
+		table_name = opts.vars[4]
+		after_table = opts.vars[5:]
+		colname_list = []
+		for item in range(0,len(after_table)):
+			if item != '(' and item != ')':
+				colname_list.append(item)
+
+		final_colname = []
+		for item in colname_list:
+			result = item.rstrip(',')
+			final_colname.append(result)
+
+		cutil._create_index(index_name, table_name, final_colname)
+
+
+	if(first_word == "drop" and second_word == "index"):
+		drop = opts.vars[2]
+		table_name = drop.split('.')[0]
+		index_name = drop.split('.')[1]
+
+		cutil._drop_index(table_name, index_name)
+
+
 
 	# print(table_name)
 	# print(update_colname_list)
