@@ -321,6 +321,7 @@ def _insert(table_name, colname_list, value_list):
 		writer.writerow(list(map(list, zip(*sorted_tuple_list)))[1])
 
 ####
+	index_flag = False
 	with open('index_data.csv', 'r') as readFile:
 		reader = csv.reader(readFile)
 		for row in reader:
