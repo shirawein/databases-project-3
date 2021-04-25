@@ -399,44 +399,43 @@ if(first_word == "bulk" and second_word == "insert"):
 	# cutil._create_table(table_name, 0, len(colnames), datatypes, colnames, primary_keys)
 
 	if table_name == "Rel-i-i-1000":
-		values = []
 		for item in range(1,1001):
+			values = []
 			values.append(item)
 			values.append(item)
 			cutil._insert(table_name, colnames, values)
 
 	if table_name == "Rel-i-1-1000":
-		values = []
 		for item in range(1,1001):
+			values = []
 			values.append(item)
 			values.append(1)
 			cutil._insert(table_name, colnames, values)
 
 	if table_name == "Rel-i-i-10000":
-		values = []
 		for item in range(1,10001):
+			values = []
 			values.append(item)
 			values.append(item)
 			cutil._insert(table_name, colnames, values)
 
 	if table_name == "Rel-i-1-10000":
-		values = []
 		for item in range(1,10001):
+			values = []
 			values.append(item)
 			values.append(1)
 			cutil._insert(table_name, colnames, values)
 
 	if table_name == "Rel-i-i-100000":
-		values = []
 		for item in range(1,100001):
+			values = []
 			values.append(item)
 			values.append(item)
 			cutil._insert(table_name, colnames, values)
 
 	if table_name == "Rel-i-1-100000":
-		values = []
 		for item in range(1,100001):
+			values = []
 			values.append(item)
 			values.append(1)
 			cutil._insert(table_name, colnames, values)
-
