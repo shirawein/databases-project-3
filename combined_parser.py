@@ -319,32 +319,6 @@ if(first_word == "update"):
 				value_list.append(after_where[j+2])
 				j = j + 3
 
-	if(first_word == "create" and second_word == "index"):
-		index_name = opts.vars[2]
-		table_name = opts.vars[4]
-		after_table = opts.vars[5:]
-		colname_list = []
-		for item in range(0,len(after_table)):
-			if item != '(' and item != ')':
-				colname_list.append(item)
-
-		final_colname = []
-		for item in colname_list:
-			result = item.rstrip(',')
-			final_colname.append(result)
-
-		cutil._create_index(index_name, table_name, final_colname)
-
-
-	if(first_word == "drop" and second_word == "index"):
-		drop = opts.vars[2]
-		table_name = drop.split('.')[0]
-		index_name = drop.split('.')[1]
-
-		cutil._drop_index(table_name, index_name)
-
-
-
 	# print(table_name)
 	# print(update_colname_list)
 	# print(update_value_list)
@@ -374,3 +348,38 @@ if(first_word == "update"):
 		final_view_value.append(result)	
 
 	cutil._update(table_name, final_view_colname, final_view_value, final_colname, condition_list, final_value, andor)
+
+
+if(first_word == "create" and second_word == "index"):
+	index_name = opts.vars[2]
+	table_name = opts.vars[4]
+	after_table = opts.vars[5:]
+	colname_list = []
+	for item in range(0,len(after_table)):
+		if item != '(' and item != ')':
+			colname_list.append(item)
+
+	final_colname = []
+	for item in colname_list:
+		result = item.rstrip(',')
+		final_colname.append(result)
+
+	cutil._create_index(index_name, table_name, final_colname)
+
+
+if(first_word == "drop" and second_word == "index"):
+	drop = opts.vars[2]
+	table_name = drop.split('.')[0]
+	index_name = drop.split('.')[1]
+
+	cutil._drop_index(table_name, index_name)
+
+if(first_word == "bulk" and second_word == "insert"):
+	# cutil._create_table
+	return 0
+
+
+	# def bulk_insert(table_name, tuple_list):
+	# # create table
+	# # insert (all tuples)
+	# return 0
