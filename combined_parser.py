@@ -362,9 +362,11 @@ if(first_word == "create" and second_word == "index"):
 	after_table = opts.vars[5:]
 	colname_list = []
 	for item in range(0,len(after_table)):
-		if item != '(' and item != ')':
-			colname_list.append(item)
+		if after_table[item] != '(' and after_table[item] != ')':
+			colname_list.append(after_table[item])
 
+
+	# print(colname_list)
 	final_colname = []
 	for item in colname_list:
 		result = item.rstrip(',')
