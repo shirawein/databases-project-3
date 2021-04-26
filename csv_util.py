@@ -4,6 +4,7 @@ import re
 from BTrees.OOBTree import OOBTree
 from BTrees.IOBTree import IOBTree
 import pickle
+from prettytable import PrettyTable
 
 def count_rows(tablename):
 	i = 0
@@ -86,7 +87,11 @@ def mmcas_function(lines, mmcas_list):
 			val = val/count
 			answer.append(val)
 		col += 1
-	print(answer)
+
+	display_pretty_table = PrettyTable()
+	display_pretty_table.add_row(answer)
+	print(display_pretty_table)
+#	print(answer)
 	return(answer)
 
 def _init_storage():
@@ -278,7 +283,9 @@ def _drop_table(table_name):
 
 
 def _insert(table_name, colname_list, value_list):
-
+	#print(table_name)
+	#print(colname_list)
+	#print(value_list)
 	file_name = table_name + ".csv"
 
 	#  check if table_name exists
@@ -553,7 +560,7 @@ def _update(table_name, update_colname_list, update_value_list, colname_list, co
 			pickle.dump(t, save_file)
 
 def _select(table_name, view_colname_list, mmcas_list, colname_list, condition_list, value_list, andor):
-	
+	#print(value_list)
 	file_name= table_name + ".csv"
 
 	# check if table exists
@@ -580,6 +587,9 @@ def _select(table_name, view_colname_list, mmcas_list, colname_list, condition_l
 		view_colname_locs.append(get_loc(view_colname_list[i], sorted_colname_list))
 	
 	
+
+
+
 ###
 	new_m_list = []
 	flag_index = False
@@ -599,7 +609,34 @@ def _select(table_name, view_colname_list, mmcas_list, colname_list, condition_l
 				if flag_index == True:
 				
 					sign = condition_list[i]
-					value_list[i]
+
+###					###
+	
+					file_name = table_name + '.csv'
+					with open(file_name, 'r') as readFile:
+						reader = csv.reader(readFile)
+						for row in reader:
+							loc = get_loc(colname_list[i], row)
+							#print(loc)
+							break
+
+					with open('table_data.csv', 'r') as readFile:
+						reader = csv.reader(readFile)
+						for row in reader:
+							if row[0] == table_name:
+								datatype_list = re.findall("'([^']*)'", row[3])
+								#print(datatype_list[loc])
+
+					if datatype_list[loc] == 'int':
+						int_flag = True
+						value_list[i] = int(value_list[i])
+					else:
+						int_flag = False
+											
+
+
+					# if sign != '=':
+					# 	value_list[i] = int(value_list[i])
 					if sign == '=':
 						m_list = list(t.values(min=value_list[i], max=value_list[i], excludemin=False, excludemax=False))
 					elif sign == '<':
@@ -621,7 +658,7 @@ def _select(table_name, view_colname_list, mmcas_list, colname_list, condition_l
 		new_m_list = list(range(1,count_rows(table_name)))
 			
 ###
-	print(new_m_list)
+	# print(new_m_list)
 	lines = list()
 	with open(file_name, 'r') as readFile:
 		reader = csv.reader(readFile)
@@ -660,11 +697,24 @@ def _select(table_name, view_colname_list, mmcas_list, colname_list, condition_l
 #	print(lines)
 	if mmcas_list:
 		return mmcas_function(lines, mmcas_list)
-	print(lines)
+
+	display_pretty_table = PrettyTable()
+	display_pretty_table.field_names = view_colname_list
+	display_pretty_table.add_rows(lines)
+	print(display_pretty_table)
 	return lines
 
 def _join(table_name_list, table1_col_list, table2_col_list, matchcol_table1, matchcol_table2, join_type, optimization):
 
+	#print(table_name_list)
+	#print(table1_col_list)
+	#print(table2_col_list)
+	#print(matchcol_table1)
+	#print(matchcol_table2)
+	#print(join_type)
+	#print(optimization)
+	# if join_type == 'full':
+	# 	optimization = 'on'
 	file1_name= table_name_list[0] + ".csv"
 	file2_name= table_name_list[1] + ".csv"
 
@@ -712,14 +762,14 @@ def _join(table_name_list, table1_col_list, table2_col_list, matchcol_table1, ma
 	outer_view_colname_locs = view_colname_locs1
 	inner_view_colname_locs = view_colname_locs2
 	if join_type == 'inner' or join_type == 'full':
-		if optimization == 'off' and count_rows(table_name_list[0]) > count_rows(table_name_list[1]):
+		if optimization == 'off' and count_rows(table_name_list[0]) < count_rows(table_name_list[1]):
 			outer_file = file2_name
 			inner_file = file1_name
 			outer_match_loc = matchcol_table2_loc
 			inner_match_loc = matchcol_table1_loc
 			outer_view_colname_locs = view_colname_locs2
 			inner_view_colname_locs = view_colname_locs1
-		elif optimization == 'on' and count_rows(table_name_list[0]) < count_rows(table_name_list[1]):
+		elif optimization == 'on' and count_rows(table_name_list[0]) > count_rows(table_name_list[1]):
 			outer_file = file2_name
 			inner_file = file1_name
 			outer_match_loc = matchcol_table2_loc
@@ -740,16 +790,18 @@ def _join(table_name_list, table1_col_list, table2_col_list, matchcol_table1, ma
 			with open(inner_file, 'r') as inner_readFile:
 				inner_reader = csv.reader(inner_readFile)
 				first_row = True
-				k = -1
+				imk = -1
 				ifirst_row = True
 				for inner_row in inner_reader:
+					imk += 1
 					if ifirst_row == True:
+						inner_mark[imk] = 0
 						ifirst_row = False
 						continue
-					k += 1
+					# k += 1
 					line = []
 					if (outer_row[outer_match_loc] == inner_row[inner_match_loc]):
-						inner_mark[k] = 1
+						inner_mark[imk] = 1
 						flag2 = True
 						for k in range(len(outer_view_colname_locs)):
 							line.append(outer_row[outer_view_colname_locs[k]])
@@ -763,18 +815,20 @@ def _join(table_name_list, table1_col_list, table2_col_list, matchcol_table1, ma
 				for k in range(len(inner_view_colname_locs)):
 					line.append('NULL')
 				lines.append(line)
-
+#		print(inner_mark)
 		if join_type == 'full' or join_type == 'right':
 			with open(inner_file, 'r') as inner_readFile:
 				first_row = True
 				inner_reader = csv.reader(inner_readFile)
-				k = -1
+				imk = -1
 				for inner_row in inner_reader:
+					imk += 1
 					if first_row:
 						first_row = False
 						continue
-					k += 1
-					if inner_mark[k] == 0:
+					# k += 1
+					if inner_mark[imk] == 0:
+					#	print(k)
 						line = []
 						for k in range(len(outer_view_colname_locs)):
 							line.append('NULL')
@@ -782,7 +836,11 @@ def _join(table_name_list, table1_col_list, table2_col_list, matchcol_table1, ma
 							line.append(inner_row[inner_view_colname_locs[k]])
 						lines.append(line)	
 
-	print(lines)
+	display_pretty_table = PrettyTable()
+#	display_pretty_table.field_names = view_colname_list
+	display_pretty_table.add_rows(lines)
+	print(display_pretty_table)
+	#print(lines)
 	return lines					
 
 
