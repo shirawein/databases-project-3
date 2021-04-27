@@ -90,7 +90,7 @@ if(first_word == "create" and second_word == "table"):
 
 if(first_word == "drop" and second_word == "table"):
 	table_name = opts.vars[2]
-	print(table_name)
+	#print(table_name)
 	cutil._drop_table(table_name)
 
 if(first_word == "select"):
