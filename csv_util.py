@@ -29,6 +29,8 @@ def get_loc(colname, colname_list):
 
 def condition_function(obj1, sign, obj2):
 	if sign == '=':
+		#print(type(obj1))
+		#print(type(obj2))
 		if obj1 == obj2:
 			return True
 	elif sign == '<':
@@ -350,12 +352,27 @@ def _insert(table_name, colname_list, value_list):
 				with open(index_file, 'rb') as load_file:
 							t = pickle.load(load_file)
 
+	datatype_list_bin = []
+	with open('table_data.csv', 'r') as readFile:
+		reader = csv.reader(readFile)
+		for row in reader:
+			if row[0] == table_name:
+				datatype_list = re.findall("'([^']*)'", row[3])
+				#print(datatype_list[loc])
+				for dt in datatype_list:
+					if dt == 'int':
+						datatype_list_bin.append(1)
+					else:
+						datatype_list_bin.append(0)
+
 	if index_flag:
 		dictt = dict(t.items())
 		print(dictt)
 		print(type(dictt))
 		loc = get_loc(index_col, sorted_colname_list)
 		key_value = sorted_tuple_list[loc][1]
+		if datatype_list_bin[loc]:
+			key_value = int(key_value)
 		print(key_value)
 		row_id = count_rows(table_name) - 1
 		if key_value in dictt:
@@ -469,10 +486,41 @@ def _update(table_name, update_colname_list, update_value_list, colname_list, co
 		for row in reader:
 			if row[0] == table_name:
 				flag = 1
+				primary_key_list = row[-1]
+				primary_key_list = re.findall("'([^']*)'", primary_key_list)
 				break
 	if flag == 0 or not os.path.exists(file_name):
 		print("The table: {} does not exist!".format(table_name))
 		return
+
+	# check for uniqueness of primary key
+	with open(file_name, 'r') as readFile:
+	    reader = csv.reader(readFile)
+	    for row in reader:
+	    	sorted_colname_list = row
+	    	break
+
+	primary_key_loc = []
+	for pk in primary_key_list:
+		i = -1
+		for col in sorted_colname_list:
+			i += 1
+			if pk == col:
+				primary_key_loc.append(i)
+
+	tuple_list = merge(update_colname_list, update_value_list)
+	sorted_tuple_list = [tuple for x in sorted_colname_list for tuple in tuple_list if tuple[0] == x]
+
+	with open(file_name, 'r') as readFile:
+		reader = csv.reader(readFile)
+		for row in reader:
+			count = 0
+			for i in primary_key_loc:
+				if str(sorted_tuple_list[i][1]) == row[i]:
+					count += 1
+					if count == len(primary_key_list):
+						print("Entry with the same primary key exist")
+						return
 
 	# get the sorted complete col names
 	with open(file_name, 'r') as readFile:
@@ -482,17 +530,52 @@ def _update(table_name, update_colname_list, update_value_list, colname_list, co
 			break	
 
 ####
+	datatype_list_bin = []
 	index_flag = False
 	with open('index_data.csv', 'r') as readFile:
 		reader = csv.reader(readFile)
 		for row in reader:
-			if row[1] == table_name:
-				index_file = row[0] + '.' + table_name
-				index_col = row[2]
-				index_flag = True
-				with open(index_file, 'rb') as load_file:
-							t = pickle.load(load_file)
+			i = -1
+			for col in update_colname_list:
+				i += 1
+				if col == row[2] and row[1] == table_name:
+					index_file = row[0] + '.' + table_name
+					index_col = row[2]
+					index_flag = True
+					with open(index_file, 'rb') as load_file:
+								t = pickle.load(load_file)
+				
+				if index_flag == True:
+				
+					sign = condition_list[i]
 
+###					###
+	
+					file_name = table_name + '.csv'
+					with open(file_name, 'r') as readFile:
+						reader = csv.reader(readFile)
+						for row in reader:
+							loc = get_loc(colname_list[i], row)
+							#print(loc)
+							break
+
+					with open('table_data.csv', 'r') as readFile:
+						reader = csv.reader(readFile)
+						for row in reader:
+							if row[0] == table_name:
+								datatype_list = re.findall("'([^']*)'", row[3])
+								#print(datatype_list[loc])
+								for dt in datatype_list:
+									if dt == 'int':
+										datatype_list_bin.append(1)
+									else:
+										datatype_list_bin.append(0)
+
+					if datatype_list[loc] == 'int':
+						int_flag = True
+						update_value_list[i] = int(update_value_list[i])
+					else:
+						int_flag = False
 ####
 
 	lines = list()
@@ -525,7 +608,10 @@ def _update(table_name, update_colname_list, update_value_list, colname_list, co
 					loc = get_loc(update_colname_list[i], sorted_colname_list)
 					if index_flag and update_colname_list[i] == index_col:
 						row_ids.append(row_id)
-						key_old_values.append(row[loc])
+						if datatype_list_bin[loc]:
+							key_old_values.append(int(row[loc]))
+						else:
+							key_old_values.append(row[loc])
 						key_values.append(update_value_list[i])
 					row[loc] = update_value_list[i]
 					
@@ -625,7 +711,7 @@ def _select(table_name, view_colname_list, mmcas_list, colname_list, condition_l
 						for row in reader:
 							if row[0] == table_name:
 								datatype_list = re.findall("'([^']*)'", row[3])
-								#print(datatype_list[loc])
+								#print(datatype_list)
 
 					if datatype_list[loc] == 'int':
 						int_flag = True
