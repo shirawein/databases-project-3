@@ -293,7 +293,7 @@ if(first_word == "delete" and second_word == "from"):
 	cutil._delete(table_name, final_colname, condition_list, final_value)
 
 if(first_word == "update"):
-	table_name = second_word
+	table_name = opts.vars[1]
 	where_index = 0
 	colname_list = []
 	update_colname_list = []
