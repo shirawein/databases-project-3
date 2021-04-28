@@ -567,13 +567,24 @@ def _update(table_name, update_colname_list, update_value_list, colname_list, co
 
 	tuple_list = merge(update_colname_list, update_value_list)
 	sorted_tuple_list = [tuple for x in sorted_colname_list for tuple in tuple_list if tuple[0] == x]
-
+# #
+	sorted_actual_list = []
+	acti = 0
+#	print(sorted_colname_list)
+#	print(len(sorted_tuple_list))
+	for act in sorted_colname_list:
+		if acti < len(sorted_tuple_list) and act == sorted_tuple_list[acti][0]:
+			sorted_actual_list.append(sorted_tuple_list[acti][1])
+			acti += 1
+		else:
+			sorted_actual_list.append('')
+# #
 	with open(file_name, 'r') as readFile:
 		reader = csv.reader(readFile)
 		for row in reader:
 			count = 0
 			for i in primary_key_loc:
-				if str(sorted_tuple_list[i][1]) == row[i]:
+				if str(sorted_actual_list[i]) == row[i]:
 					count += 1
 					if count == len(primary_key_list):
 						print("Entry with the same primary key exist")
@@ -680,6 +691,10 @@ def _update(table_name, update_colname_list, update_value_list, colname_list, co
 			if(not first_row):
 				for i in range(0, len(colname_list)):
 					loc = get_loc(colname_list[i], sorted_colname_list)
+					# #
+					if loc == -1:
+						print("Column does not exist")
+						return
 					if not condition_function(row[loc], condition_list[i], str(value_list[i])):
 						true_flag = 1
 					if condition_function(row[loc], condition_list[i], str(value_list[i])):
