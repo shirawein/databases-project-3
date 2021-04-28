@@ -36,6 +36,8 @@ def get_loc(colname, colname_list):
 	return -1
 
 def condition_function(obj1, sign, obj2):
+	if obj1 == '' or obj2 == '':
+		return False
 	if sign == '=':
 		#print(type(obj1))
 		#print(type(obj2))
