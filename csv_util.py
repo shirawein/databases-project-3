@@ -6,6 +6,13 @@ from BTrees.IOBTree import IOBTree
 import pickle
 from prettytable import PrettyTable
 
+def RepresentsInt(s):
+    try: 
+        int(s)
+        return True
+    except ValueError:
+        return False
+
 def count_rows(tablename):
 	i = 0
 	filename = tablename + ".csv"
@@ -323,6 +330,21 @@ def _insert(table_name, colname_list, value_list):
 
 	tuple_list = merge(colname_list, value_list)
 	sorted_tuple_list = [tuple for x in sorted_colname_list for tuple in tuple_list if tuple[0] == x]
+#####
+	datatype_list_bin = []
+	with open('table_data.csv', 'r') as readFile:
+		reader = csv.reader(readFile)
+		for row in reader:
+			if row[0] == table_name:
+				datatype_list = re.findall("'([^']*)'", row[3])
+				#print(datatype_list[loc])
+				for dt in datatype_list:
+					if dt == 'int':
+						datatype_list_bin.append(1)
+					else:
+						datatype_list_bin.append(0)
+
+
 
 	sorted_actual_list = []
 	acti = 0
@@ -332,6 +354,16 @@ def _insert(table_name, colname_list, value_list):
 			acti += 1
 		else:
 			sorted_actual_list.append('')
+
+
+	bini = -1
+	for ab in sorted_actual_list:
+		bini += 1
+		if RepresentsInt(ab) == datatype_list_bin[bini]:
+			correct_flag = 1
+		else:
+			print("Datatype exception error")
+			return
 			
 	with open(file_name, 'r') as readFile:
 		reader = csv.reader(readFile)
