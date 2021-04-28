@@ -344,7 +344,10 @@ def _insert(table_name, colname_list, value_list):
 					if count == len(primary_key_list):
 						print("Entry with the same primary key exist")
 						return
-
+	for i in primary_key_loc:
+		if sorted_actual_list[i] == '':
+			print("Primary key cannot be empty")
+			return
 	# write
 	with open(file_name, 'a') as file:
 		writer = csv.writer(file, delimiter = ",")
