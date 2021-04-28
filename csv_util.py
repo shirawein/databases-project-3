@@ -349,17 +349,24 @@ def _insert(table_name, colname_list, value_list):
 
 	sorted_actual_list = []
 	acti = 0
+#	print(sorted_colname_list)
+#	print(len(sorted_tuple_list))
 	for act in sorted_colname_list:
-		if act == sorted_tuple_list[acti][0]:
+		if acti < len(sorted_tuple_list) and act == sorted_tuple_list[acti][0]:
 			sorted_actual_list.append(sorted_tuple_list[acti][1])
 			acti += 1
 		else:
 			sorted_actual_list.append('')
 
+#	print(sorted_actual_list)
 
 	bini = -1
 	for ab in sorted_actual_list:
 		bini += 1
+		if ab == '':
+			continue
+#		print(RepresentsInt(ab))
+#		print(datatype_list_bin[bini])
 		if RepresentsInt(ab) == datatype_list_bin[bini]:
 			correct_flag = 1
 		else:
