@@ -33,6 +33,7 @@ def get_loc(colname, colname_list):
 		i += 1
 		if colname == col:
 			return(i)
+	return -1
 
 def condition_function(obj1, sign, obj2):
 	if sign == '=':
@@ -362,7 +363,7 @@ def _insert(table_name, colname_list, value_list):
 		if RepresentsInt(ab) == datatype_list_bin[bini]:
 			correct_flag = 1
 		else:
-			print("Datatype exception error")
+			print("Datatype mismatch error")
 			return
 			
 	with open(file_name, 'r') as readFile:
@@ -484,6 +485,9 @@ def _delete(table_name, colname_list, condition_list, value_list):
 			if(not first_row):
 				for i in range(0, len(colname_list)):
 					loc = get_loc(colname_list[i], sorted_colname_list)
+					if loc == -1:
+						print("Column does not exist")
+						return
 					if not condition_function(row[loc], condition_list[i], str(value_list[i])):
 						true_flag = 1
 			else:
@@ -590,7 +594,22 @@ def _update(table_name, update_colname_list, update_value_list, colname_list, co
 					index_flag = True
 					with open(index_file, 'rb') as load_file:
 								t = pickle.load(load_file)
+
+
+				with open('table_data.csv', 'r') as readFile:
+					reader = csv.reader(readFile)
+					for row in reader:
+						if row[0] == table_name:
+							datatype_list = re.findall("'([^']*)'", row[3])
+							#print(datatype_list[loc])
+							for dt in datatype_list:
+								if dt == 'int':
+									datatype_list_bin.append(1)
+								else:
+									datatype_list_bin.append(0)
+
 				
+
 				if index_flag == True:
 				
 					sign = condition_list[i]
@@ -605,23 +624,38 @@ def _update(table_name, update_colname_list, update_value_list, colname_list, co
 							#print(loc)
 							break
 
-					with open('table_data.csv', 'r') as readFile:
-						reader = csv.reader(readFile)
-						for row in reader:
-							if row[0] == table_name:
-								datatype_list = re.findall("'([^']*)'", row[3])
-								#print(datatype_list[loc])
-								for dt in datatype_list:
-									if dt == 'int':
-										datatype_list_bin.append(1)
-									else:
-										datatype_list_bin.append(0)
+					# with open('table_data.csv', 'r') as readFile:
+					# 	reader = csv.reader(readFile)
+					# 	for row in reader:
+					# 		if row[0] == table_name:
+					# 			datatype_list = re.findall("'([^']*)'", row[3])
+					# 			#print(datatype_list[loc])
+					# 			for dt in datatype_list:
+					# 				if dt == 'int':
+					# 					datatype_list_bin.append(1)
+					# 				else:
+					# 					datatype_list_bin.append(0)
 
 					if datatype_list[loc] == 'int':
 						int_flag = True
 						update_value_list[i] = int(update_value_list[i])
 					else:
 						int_flag = False
+
+	bini = -1
+	for ab in sorted_tuple_list:
+		bini += 1
+		loc = get_loc(ab[0], sorted_colname_list)
+		#print(ab[0])
+		#print(loc)
+		#print(datatype_list_bin)
+		if RepresentsInt(ab[1]) == datatype_list_bin[loc]:
+			correct_flag = 1
+		else:
+			print("Datatype mismatch error")
+			return
+
+
 ####
 
 	lines = list()
