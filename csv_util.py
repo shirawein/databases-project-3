@@ -324,12 +324,22 @@ def _insert(table_name, colname_list, value_list):
 	tuple_list = merge(colname_list, value_list)
 	sorted_tuple_list = [tuple for x in sorted_colname_list for tuple in tuple_list if tuple[0] == x]
 
+	sorted_actual_list = []
+	acti = 0
+	for act in sorted_colname_list:
+		if act == sorted_tuple_list[acti][0]:
+			sorted_actual_list.append(sorted_tuple_list[acti][1])
+			acti += 1
+		else:
+			sorted_actual_list.append('')
+			
 	with open(file_name, 'r') as readFile:
 		reader = csv.reader(readFile)
 		for row in reader:
 			count = 0
 			for i in primary_key_loc:
-				if str(sorted_tuple_list[i][1]) == row[i]:
+#				if str(sorted_tuple_list[i][1]) == row[i]:
+				if str(sorted_actual_list[i]) == row[i]:
 					count += 1
 					if count == len(primary_key_list):
 						print("Entry with the same primary key exist")
@@ -338,7 +348,8 @@ def _insert(table_name, colname_list, value_list):
 	# write
 	with open(file_name, 'a') as file:
 		writer = csv.writer(file, delimiter = ",")
-		writer.writerow(list(map(list, zip(*sorted_tuple_list)))[1])
+#		writer.writerow(list(map(list, zip(*sorted_tuple_list)))[1])
+		writer.writerow(sorted_actual_list)
 
 ####
 	index_flag = False
