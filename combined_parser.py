@@ -90,7 +90,7 @@ if(first_word == "create" and second_word == "table"):
 
 if(first_word == "drop" and second_word == "table"):
 	table_name = opts.vars[2]
-	print(table_name)
+	#print(table_name)
 	cutil._drop_table(table_name)
 
 if(first_word == "select"):
@@ -293,7 +293,7 @@ if(first_word == "delete" and second_word == "from"):
 	cutil._delete(table_name, final_colname, condition_list, final_value)
 
 if(first_word == "update"):
-	table_name = second_word
+	table_name = opts.vars[1]
 	where_index = 0
 	colname_list = []
 	update_colname_list = []
